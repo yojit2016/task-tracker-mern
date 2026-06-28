@@ -1,163 +1,171 @@
 # Ledger
 
-A production-ready, highly responsive Task Tracker web application built using the MERN stack (MongoDB, Express, React, Node.js) with Tailwind CSS v4, axios, express-validator, and centralized error handling.
+A full-stack task tracker built with the MERN stack — clean REST API, real-time UI updates, and a record-keeping-inspired design instead of the usual SaaS dashboard look.
 
-## Project Structure
+**Live App:** [ledger-joji.vercel.app](https://ledger-joji.vercel.app/)
 
-This project is set up as a monorepo:
-```text
-/client   → React frontend (Vite + Tailwind CSS v4)
-/server   → Node.js + Express backend (MongoDB + Mongoose)
-```
+![Ledger screenshot](./docs/screenshot.png)
 
 ---
+
+## Contents
+
+- [Features](#features)
+- [Tech Stack](#tech-stack)
+- [Project Structure](#project-structure)
+- [Getting Started](#getting-started)
+- [Environment Variables](#environment-variables)
+- [API Reference](#api-reference)
+- [Security](#security)
+- [Design Notes](#design-notes)
+- [Deployment](#deployment)
+- [Roadmap](#roadmap)
+- [License](#license)
 
 ## Features
 
-- **Full CRUD Operations**: Create, read, update, and delete tasks instantly (no full page reloads).
-- **Search & Filter**: Find tasks by title, filter by status (pending, in-progress, completed) and priority (low, medium, high).
-- **Multi-criteria Sorting**: Sort tasks by due date, priority, or creation time in ascending or descending order.
-- **Form Validation**: Client-side validations for required fields and logical constraints (e.g. no past due dates for new tasks) and server-side strict validation via `express-validator`.
-- **Theme Support**: Modern and premium dark mode toggle.
-- **Beautiful UI**: Visual indicators for status, priority, and overdue dates, equipped with skeleton loading screens.
-- **Notifications**: Toast notifications for all success and error actions.
+- Full CRUD on tasks, with optimistic UI updates and no full page reloads
+- Filtering by status/priority, sorting by due date/priority/created date, and live search
+- Validation enforced on both client and server — the server is the source of truth
+- Light/dark theme with persisted preference
+- Toast feedback on every create/update/delete action
+- Hardened API: rate limiting, NoSQL injection sanitization, locked-down CORS, and more (see [Security](#security))
 
----
+## Tech Stack
+
+| Layer | Technology |
+|---|---|
+| Frontend | React (Vite), Tailwind CSS v4, Axios, react-hot-toast, lucide-react |
+| Backend | Node.js, Express, Mongoose, express-validator |
+| Database | MongoDB Atlas |
+| Security | helmet, express-rate-limit, express-mongo-sanitize |
+| Hosting | Vercel (frontend), Render (backend) |
+
+## Project Structure
+
+```
+ledger/
+├── client/                # React frontend (Vite)
+│   └── src/
+│       ├── api/           # Axios layer — single source of truth for API calls
+│       └── components/    # TaskForm, TaskCard, TaskList, FilterBar, Modal, SkeletonLoader
+├── server/                # Express API
+│   ├── models/            # Mongoose schemas
+│   ├── routes/            # Route handlers
+│   └── middleware/        # Centralized error handling, validation
+└── docs/                  # README assets
+```
+
+## Getting Started
+
+**Prerequisites:** Node.js 18+, a MongoDB connection string ([Atlas](https://www.mongodb.com/cloud/atlas) or local).
+
+```bash
+# Backend
+cd server
+npm install
+cp .env.example .env   # set MONGO_URI, PORT, CLIENT_URL
+npm run dev
+
+# Frontend (separate terminal)
+cd client
+npm install
+cp .env.example .env   # set VITE_API_URL
+npm run dev
+```
+
+Frontend runs at `http://localhost:5173`, API at `http://localhost:5000`.
 
 ## Environment Variables
 
-### Backend (`/server/.env`)
+**`server/.env`**
 
-| Variable | Description | Example / Default |
-| :--- | :--- | :--- |
-| `PORT` | Port for Express server | `5000` |
-| `MONGO_URI` | MongoDB Connection String | `mongodb://localhost:27017/tasktracker` |
-| `CLIENT_URL` | Deployed Frontend URL (for CORS) | `http://localhost:5173` |
+| Variable | Description |
+|---|---|
+| `MONGO_URI` | MongoDB connection string |
+| `PORT` | Server port (default `5000`) |
+| `CLIENT_URL` | Allowed frontend origin, enforced via CORS |
+| `NODE_ENV` | `development` or `production` |
 
-### Frontend (`/client/.env`)
+**`client/.env`**
 
-| Variable | Description | Example / Default |
-| :--- | :--- | :--- |
-| `VITE_API_URL` | Base URL of backend API | `http://localhost:5000` |
+| Variable | Description |
+|---|---|
+| `VITE_API_URL` | Base URL of the backend API |
 
----
+> The production `VITE_API_URL`/`CLIENT_URL` pair isn't published here on purpose — the API isn't meant for direct public use outside the deployed frontend. Anyone running this locally just points both at `localhost`.
 
-## Getting Started (Local Development)
+## API Reference
 
-### Prerequisites
+Base path: `/api/tasks`
 
-- **Node.js**: v18.0.0 or higher
-- **MongoDB**: A running local instance or a MongoDB Atlas URI
+| Method | Endpoint | Description |
+|---|---|---|
+| `GET` | `/api/tasks` | List tasks. Query: `status`, `priority`, `search`, `sortBy`, `order` |
+| `GET` | `/api/tasks/:id` | Get a single task |
+| `POST` | `/api/tasks` | Create a task |
+| `PUT` | `/api/tasks/:id` | Update a task (partial updates allowed) |
+| `DELETE` | `/api/tasks/:id` | Delete a task |
+| `GET` | `/api/health` | Health check |
 
-### Step 1: Clone the Repository
-Ensure you are in the project folder:
-```bash
-cd task-tracker-mern
-```
-
-### Step 2: Set up the Backend Server
-1. Navigate to the server directory:
-   ```bash
-   cd server
-   ```
-2. Install dependencies:
-   ```bash
-   npm install
-   ```
-3. Create a `.env` file based on `.env.example`:
-   ```bash
-   cp .env.example .env
-   ```
-4. Start the backend server in development mode (with nodemon):
-   ```bash
-   npm run dev
-   ```
-
-### Step 3: Set up the Frontend Client
-1. Open a new terminal window and navigate to the client directory:
-   ```bash
-   cd client
-   ```
-2. Install dependencies:
-   ```bash
-   npm install
-   ```
-3. Create a `.env` file based on `.env.example`:
-   ```bash
-   cp .env.example .env
-   ```
-4. Start the Vite React development server:
-   ```bash
-   npm run dev
-   ```
-
----
-
-## API Documentation
-
-### Base Route: `/api/tasks`
-
-All requests should respond with a JSON payload of the form:
+**Task object**
 ```json
 {
-  "success": true,
-  "data": ...
+  "_id": "665f1b2e4f1a2b001c8e4a3d",
+  "title": "Finish CQI Tracker review",
+  "description": "Optional, max 500 chars",
+  "status": "pending",
+  "priority": "high",
+  "dueDate": "2026-07-01T00:00:00.000Z",
+  "createdAt": "2026-06-28T10:12:00.000Z",
+  "updatedAt": "2026-06-28T10:12:00.000Z"
 }
 ```
-Or for errors:
+
+**Validation error shape**
 ```json
 {
   "success": false,
-  "message": "Error description text",
-  "errors": [] // Optional validation errors
+  "message": "Validation failed",
+  "errors": [{ "field": "title", "message": "Title is required" }]
 }
 ```
 
-| Method | Endpoint | Description | Query Parameters |
-| :--- | :--- | :--- | :--- |
-| **GET** | `/api/tasks` | Get all tasks | `status`, `priority`, `search` (title matches), `sortBy` (`dueDate`, `createdAt`, `priority`), `order` (`asc`/`desc`) |
-| **GET** | `/api/tasks/:id` | Get task by ID | None |
-| **POST** | `/api/tasks` | Create a task | Require: `title`. Optional: `description`, `status`, `priority`, `dueDate` |
-| **PUT** | `/api/tasks/:id` | Update a task | Partial updates allowed |
-| **DELETE** | `/api/tasks/:id`| Delete task | None |
-| **GET** | `/api/health` | Uptime check | Returns `{ "status": "ok" }` |
+## Security
+
+- `helmet` for secure HTTP response headers
+- Rate limiting — 100 requests / 15 min / IP on task routes
+- `express-mongo-sanitize` to strip `$`/`.` injection operators from input
+- CORS locked to the deployed frontend origin in production
+- Request body size capped at 10kb
+- Generic error responses in production — no stack traces leaked to clients
+- `X-Powered-By` disabled
+- Past due dates rejected server-side, not just in the form
+
+## Design Notes
+
+The UI deliberately avoids the generic "dark dashboard with a neon accent" look. It's built around a ledger/record-keeping metaphor instead: ruled line-item rows rather than floating cards, monospace type for dates and counts (because a ledger's numbers are its most important content), and stamp-style status badges as the one distinctive visual device. Light and dark themes mirror the same concept rather than being two unrelated designs bolted together.
+
+## Deployment
+
+| Service | Role |
+|---|---|
+| Vercel | Frontend hosting, deployed from `client/` |
+| Render | Backend hosting, deployed from `server/` |
+| MongoDB Atlas | Database |
+
+Each service is configured with its own environment variables (see [above](#environment-variables)); CORS and the API base URL are kept in sync between Render and Vercel so the two can only talk to each other.
+
+## Roadmap
+
+- [ ] Pagination for large task lists
+- [ ] User authentication (currently single-user by design)
+- [ ] Automated test suite (Jest/Vitest + Supertest)
+
+## License
+
+MIT — see [LICENSE](./LICENSE).
 
 ---
 
-## Deployment Guide
-
-### 1. MongoDB Atlas Setup
-1. Sign up/Log in to [MongoDB Atlas](https://www.mongodb.com/cloud/atlas).
-2. Create a free shared cluster.
-3. In **Network Access**, add `0.0.0.0/0` (allow access from anywhere, required for Render).
-4. In **Database Access**, create a user with read/write permissions.
-5. Click **Connect** → **Drivers** and copy the Connection String (`mongodb+srv://...`). Replace `<password>` with your user's password.
-
-### 2. Backend Deployment on Render
-1. Sign up/Log in to [Render](https://render.com).
-2. Click **New** → **Web Service**.
-3. Connect your GitHub repository.
-4. Set the following fields:
-   - **Root Directory**: `server`
-   - **Build Command**: `npm install`
-   - **Start Command**: `npm start`
-5. Add Environment Variables:
-   - `MONGO_URI`: *Your MongoDB Atlas Connection String*
-   - `CLIENT_URL`: *Your Vercel deployment URL (e.g. `https://your-app.vercel.app`)*
-   - `PORT`: `10000` (Render binds automatically, but safe to set or omit)
-6. Deploy the Web Service.
-
-### 3. Frontend Deployment on Vercel
-1. Sign up/Log in to [Vercel](https://vercel.com).
-2. Click **Add New** → **Project** and import your GitHub repository.
-3. Set the following configuration:
-   - **Root Directory**: `client`
-   - **Framework Preset**: `Vite`
-   - **Build Command**: `npm run build`
-   - **Output Directory**: `dist`
-4. Add Environment Variable:
-   - `VITE_API_URL`: *Your Render backend URL (e.g. `https://your-api.onrender.com`)*
-5. Click **Deploy**.
-
-> [!IMPORTANT]
-> Once both services are deployed, update the `CLIENT_URL` environment variable on Render to point to the live Vercel frontend URL, then trigger a manual redeployment on Render to apply CORS restrictions properly.
+Built by Yojit.
