@@ -145,14 +145,14 @@ const App = () => {
       if (editingTask) {
         // Update task
         const response = await updateTask(editingTask._id, taskData);
-        toast.success('Task updated successfully');
+        toast.success('Saved');
         // Optimistic state updates
         setTasks(prev => prev.map(t => t._id === editingTask._id ? response.data : t));
         setAllTasks(prev => prev.map(t => t._id === editingTask._id ? response.data : t));
       } else {
         // Create task
         const response = await createTask(taskData);
-        toast.success('Task created successfully');
+        toast.success('Created');
         // Refetch or prepend to list
         setTasks(prev => [response.data, ...prev]);
         setAllTasks(prev => [response.data, ...prev]);
@@ -171,11 +171,11 @@ const App = () => {
   const handleDeleteTask = async (id) => {
     try {
       await deleteTask(id);
-      toast.success('Task deleted successfully');
+      toast.success('Deleted');
       setTasks((prev) => prev.filter((t) => t._id !== id));
       setAllTasks((prev) => prev.filter((t) => t._id !== id));
     } catch (err) {
-      toast.error('Failed to delete task');
+      toast.error('Failed to delete');
       throw err;
     }
   };
@@ -184,13 +184,13 @@ const App = () => {
   const handleStatusChange = async (id, nextStatus) => {
     try {
       const response = await updateTask(id, { status: nextStatus });
-      toast.success(`Task marked as ${nextStatus.replace('-', ' ')}`);
+      toast.success(`Marked as ${nextStatus.replace('-', ' ')}`);
       
       // Update local state list
       setTasks(prev => prev.map(t => t._id === id ? response.data : t));
       setAllTasks(prev => prev.map(t => t._id === id ? response.data : t));
     } catch (err) {
-      toast.error('Failed to update task status');
+      toast.error('Failed to update status');
     }
   };
 
@@ -211,25 +211,25 @@ const App = () => {
   }).length;
 
   return (
-    <div className="min-h-screen pb-12 transition-colors duration-300">
+    <div className="min-h-screen pb-12 bg-ledger-bg text-ledger-ink transition-colors duration-300">
       <Toaster position="top-right" toastOptions={{ duration: 3000 }} />
 
       {/* Header Bar */}
-      <header className="sticky top-0 z-40 border-b border-slate-200/60 bg-white/80 backdrop-blur-md dark:border-slate-800/80 dark:bg-[#0b0f19]/80">
+      <header className="sticky top-0 z-40 border-b border-ledger-border bg-ledger-bg/85 backdrop-blur-md">
         <div className="mx-auto max-w-7xl px-4 py-4 sm:px-6 lg:px-8 flex items-center justify-between">
           <div className="flex items-center gap-2.5">
-            <div className="rounded-xl bg-brand-600 p-2 text-white shadow-md shadow-brand-500/20">
-              <ListTodo size={20} />
+            <div className="rounded-sm bg-ledger-brass p-2 text-ledger-bg shadow-xs flex items-center justify-center">
+              <ListTodo size={20} className="text-[#15201C]" />
             </div>
             <div>
-              <h1 className="font-heading text-lg font-extrabold tracking-tight text-slate-800 dark:text-white m-0 leading-none">
+              <h1 className="font-display text-2xl font-bold tracking-tight text-ledger-ink m-0 leading-none">
                 Ledger
               </h1>
-              <div className="flex items-center gap-1.5 mt-1">
-                <span className={`h-2 w-2 rounded-full ${
-                  apiStatus === 'online' ? 'bg-emerald-500 animate-pulse' : apiStatus === 'offline' ? 'bg-rose-500' : 'bg-slate-400'
+              <div className="flex items-center gap-1.5 mt-1.5">
+                <span className={`h-1.5 w-1.5 rounded-full ${
+                  apiStatus === 'online' ? 'bg-status-completed animate-pulse' : apiStatus === 'offline' ? 'bg-status-high' : 'bg-ledger-ink/20'
                 }`} />
-                <span className="text-[10px] text-slate-400 dark:text-slate-500 font-medium">
+                <span className="font-mono text-[9px] uppercase tracking-widest text-ledger-ink/50 font-medium">
                   {apiStatus === 'online' ? 'API Online' : apiStatus === 'offline' ? 'API Offline' : 'Connecting...'}
                 </span>
               </div>
@@ -239,10 +239,10 @@ const App = () => {
           {/* Theme switcher */}
           <button
             onClick={() => setDarkMode(!darkMode)}
-            className="rounded-xl border border-slate-200 p-2.5 hover:bg-slate-50 text-slate-500 dark:border-slate-800 dark:hover:bg-slate-800 dark:text-slate-400 transition-all cursor-pointer"
+            className="rounded-sm border border-ledger-border p-2.5 hover:bg-ledger-surface/60 text-ledger-ink transition-all cursor-pointer focus:outline-hidden focus:ring-1 focus:ring-ledger-brass"
             aria-label="Toggle dark mode"
           >
-            {darkMode ? <Sun size={16} className="text-amber-400" /> : <Moon size={16} />}
+            {darkMode ? <Sun size={15} className="text-ledger-brass" /> : <Moon size={15} />}
           </button>
         </div>
       </header>
@@ -252,60 +252,33 @@ const App = () => {
         
         {/* Overdue Banner Notification */}
         {overdueCount > 0 && (
-          <div className="mb-6 flex items-center justify-between rounded-xl bg-rose-50/80 border border-rose-200/50 p-4 text-rose-800 dark:bg-rose-950/20 dark:border-rose-900/40 dark:text-rose-300 animate-fade-in">
+          <div className="mb-6 flex items-center justify-between rounded-sm bg-status-high/10 border border-status-high/30 p-4 text-status-high animate-fade-in font-mono text-xs">
             <div className="flex items-center gap-2">
-              <AlertTriangle size={18} className="shrink-0 text-rose-600 dark:text-rose-400 animate-bounce" />
-              <p className="text-sm font-semibold">
-                Attention: You have {overdueCount} task{overdueCount > 1 ? 's' : ''} overdue!
+              <AlertTriangle size={15} className="shrink-0 text-status-high animate-bounce" />
+              <p className="font-bold">
+                Attention: {overdueCount} task{overdueCount > 1 ? 's' : ''} overdue!
               </p>
             </div>
           </div>
         )}
 
-        {/* Dashboard Statistics Metrics */}
-        <section className="grid grid-cols-2 gap-4 md:grid-cols-4 mb-6">
-          {/* Total tasks */}
-          <div className="rounded-2xl border border-slate-200/60 bg-white p-4 shadow-xs dark:border-slate-850 dark:bg-[#111827] flex items-center gap-4 transition-all duration-300 hover:shadow-md">
-            <div className="rounded-xl bg-slate-100 p-3 text-slate-500 dark:bg-slate-850 dark:text-slate-400">
-              <ListTodo size={20} />
-            </div>
-            <div>
-              <p className="text-2xl font-black text-slate-800 dark:text-slate-100">{totalTasks}</p>
-              <p className="text-xs font-semibold text-slate-400 dark:text-slate-500 uppercase tracking-wider">Total Tasks</p>
-            </div>
+        {/* Ledger Summary Strip */}
+        <section className="border border-ledger-border bg-ledger-surface py-3 mb-6 grid grid-cols-2 md:grid-cols-4 rounded-sm divide-x divide-y md:divide-y-0 divide-ledger-border">
+          <div className="p-2 text-center flex flex-col justify-center">
+            <p className="font-mono text-3xl font-extrabold text-ledger-ink">{totalTasks}</p>
+            <p className="font-mono text-[9px] font-semibold uppercase tracking-widest text-ledger-ink/50 mt-1">Total Entries</p>
           </div>
-
-          {/* Pending tasks */}
-          <div className="rounded-2xl border border-slate-200/60 bg-white p-4 shadow-xs dark:border-slate-850 dark:bg-[#111827] flex items-center gap-4 transition-all duration-300 hover:shadow-md">
-            <div className="rounded-xl bg-amber-50 p-3 text-amber-500 dark:bg-amber-950/20 dark:text-amber-400">
-              <Clock size={20} />
-            </div>
-            <div>
-              <p className="text-2xl font-black text-slate-800 dark:text-slate-100">{pendingCount}</p>
-              <p className="text-xs font-semibold text-slate-400 dark:text-slate-500 uppercase tracking-wider">Pending</p>
-            </div>
+          <div className="p-2 text-center flex flex-col justify-center border-t border-ledger-border md:border-t-0">
+            <p className="font-mono text-3xl font-extrabold text-status-pending">{pendingCount}</p>
+            <p className="font-mono text-[9px] font-semibold uppercase tracking-widest text-ledger-ink/50 mt-1">Pending</p>
           </div>
-
-          {/* In-progress tasks */}
-          <div className="rounded-2xl border border-slate-200/60 bg-white p-4 shadow-xs dark:border-slate-850 dark:bg-[#111827] flex items-center gap-4 transition-all duration-300 hover:shadow-md">
-            <div className="rounded-xl bg-blue-50 p-3 text-blue-500 dark:bg-blue-950/20 dark:text-blue-400">
-              <Play size={20} />
-            </div>
-            <div>
-              <p className="text-2xl font-black text-slate-800 dark:text-slate-100">{inProgressCount}</p>
-              <p className="text-xs font-semibold text-slate-400 dark:text-slate-500 uppercase tracking-wider">In Progress</p>
-            </div>
+          <div className="p-2 text-center flex flex-col justify-center border-t border-ledger-border md:border-t-0">
+            <p className="font-mono text-3xl font-extrabold text-status-progress">{inProgressCount}</p>
+            <p className="font-mono text-[9px] font-semibold uppercase tracking-widest text-ledger-ink/50 mt-1">In Progress</p>
           </div>
-
-          {/* Completed tasks */}
-          <div className="rounded-2xl border border-slate-200/60 bg-white p-4 shadow-xs dark:border-slate-850 dark:bg-[#111827] flex items-center gap-4 transition-all duration-300 hover:shadow-md">
-            <div className="rounded-xl bg-emerald-50 p-3 text-emerald-500 dark:bg-emerald-950/20 dark:text-emerald-400">
-              <CheckCircle2 size={20} />
-            </div>
-            <div>
-              <p className="text-2xl font-black text-slate-800 dark:text-slate-100">{completedCount}</p>
-              <p className="text-xs font-semibold text-slate-400 dark:text-slate-500 uppercase tracking-wider">Completed</p>
-            </div>
+          <div className="p-2 text-center flex flex-col justify-center border-t border-ledger-border md:border-t-0">
+            <p className="font-mono text-3xl font-extrabold text-status-completed">{completedCount}</p>
+            <p className="font-mono text-[9px] font-semibold uppercase tracking-widest text-ledger-ink/50 mt-1">Completed</p>
           </div>
         </section>
 
@@ -318,17 +291,17 @@ const App = () => {
 
         {/* Task Grid / Content State */}
         {error ? (
-          <div className="text-center p-12 rounded-2xl border border-rose-200/60 bg-white shadow-xs dark:border-rose-900/50 dark:bg-[#111827] mt-6 max-w-xl mx-auto animate-fade-in">
-            <AlertTriangle className="mx-auto text-rose-500 mb-3" size={32} />
-            <h3 className="font-heading text-base font-bold text-slate-800 dark:text-slate-200">
+          <div className="text-center p-12 rounded-sm border border-ledger-border bg-ledger-surface mt-6 max-w-xl mx-auto animate-fade-in">
+            <AlertTriangle className="mx-auto text-status-high mb-3" size={28} />
+            <h3 className="font-display text-base font-bold text-ledger-ink">
               Connection Failure
             </h3>
-            <p className="text-xs text-slate-500 dark:text-slate-400 mt-1 max-w-sm mx-auto leading-relaxed">
+            <p className="text-xs text-ledger-ink/65 mt-1 max-w-sm mx-auto leading-relaxed">
               {error}
             </p>
             <button
               onClick={fetchTasks}
-              className="mt-5 inline-flex items-center gap-2 rounded-xl bg-slate-900 dark:bg-slate-100 dark:text-slate-900 text-white px-4 py-2.5 text-xs font-bold hover:opacity-90 active:scale-98 transition-all cursor-pointer"
+              className="mt-5 inline-flex items-center gap-2 rounded-sm bg-ledger-brass text-[#15201C] px-4 py-2 text-xs font-bold hover:bg-ledger-brass-hover transition-all cursor-pointer focus:outline-hidden focus:ring-2 focus:ring-ledger-brass/45"
             >
               <RefreshCw size={12} />
               <span>Try Reconnecting</span>
@@ -354,7 +327,7 @@ const App = () => {
       <Modal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
-        title={editingTask ? 'Edit Task Settings' : 'Create a New Task'}
+        title={editingTask ? 'Save' : 'New Task'}
       >
         <TaskForm
           editingTask={editingTask}

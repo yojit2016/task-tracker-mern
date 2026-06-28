@@ -1,43 +1,59 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600;700&family=Lora:ital,wght@0,400;0,700;1,400&display=swap');
 
 @import "tailwindcss";
 
+:root {
+  --ledger-bg: #EDE6D6;
+  --ledger-surface: #E6DFCD;
+  --ledger-border: #D8D0BA;
+  --ledger-ink: #15201C;
+  --ledger-brass: #C9A66B;
+  --ledger-brass-hover: #bda25b;
+
+  --status-pending: #D98E48;
+  --status-progress: #4FA8A0;
+  --status-completed: #7FA66B;
+  --status-high: #B5533C;
+}
+
+.dark {
+  --ledger-bg: #15201C;
+  --ledger-surface: #1E2A24;
+  --ledger-border: #2A3A33;
+  --ledger-ink: #EDE6D6;
+  --ledger-brass: #C9A66B;
+  --ledger-brass-hover: #d5b880;
+
+  --status-pending: #D98E48;
+  --status-progress: #4FA8A0;
+  --status-completed: #7FA66B;
+  --status-high: #B5533C;
+}
+
 @theme {
   --font-sans: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  --font-heading: 'Outfit', sans-serif;
+  --font-display: 'Lora', Georgia, serif;
+  --font-mono: 'IBM Plex Mono', monospace;
 
-  --color-brand-50: #f5f3ff;
-  --color-brand-100: #ede9fe;
-  --color-brand-200: #ddd6fe;
-  --color-brand-300: #c4b5fd;
-  --color-brand-400: #a78bfa;
-  --color-brand-500: #8b5cf6;
-  --color-brand-600: #7c3aed;
-  --color-brand-700: #6d28d9;
-  --color-brand-800: #5b21b6;
-  --color-brand-900: #4c1d95;
-  --color-brand-950: #2e1065;
+  --color-ledger-bg: var(--ledger-bg);
+  --color-ledger-surface: var(--ledger-surface);
+  --color-ledger-border: var(--ledger-border);
+  --color-ledger-ink: var(--ledger-ink);
+  --color-ledger-brass: var(--ledger-brass);
+  --color-ledger-brass-hover: var(--ledger-brass-hover);
+
+  --color-status-pending: var(--status-pending);
+  --color-status-progress: var(--status-progress);
+  --color-status-completed: var(--status-completed);
+  --color-status-high: var(--status-high);
 }
 
 /* Custom variant to enable class-based dark mode toggle */
 @variant dark (.dark &);
 
-@utility glass-panel {
-  background-color: rgba(255, 255, 255, 0.7);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border-width: 1px;
-  border-color: rgba(226, 232, 240, 0.8);
-}
-
-.dark .glass-panel {
-  background-color: rgba(17, 24, 39, 0.7);
-  border-color: rgba(31, 41, 55, 0.8);
-}
-
 body {
-  background-color: #f8fafc;
-  color: #0f172a;
+  background-color: var(--ledger-bg);
+  color: var(--ledger-ink);
   font-family: var(--font-sans);
   transition-property: color, background-color, border-color, text-decoration-color, fill, stroke;
   transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
@@ -46,12 +62,7 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
-body.dark {
-  background-color: #090d16;
-  color: #f1f5f9;
-}
-
-/* Custom Scrollbars */
+/* Custom Scrollbars to blend with paper/ink theme */
 ::-webkit-scrollbar {
   width: 6px;
   height: 6px;
@@ -60,25 +71,18 @@ body.dark {
   background: transparent;
 }
 ::-webkit-scrollbar-thumb {
-  background: #cbd5e1;
+  background: var(--ledger-border);
   border-radius: 9999px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #94a3b8;
+  background: var(--ledger-brass);
 }
 
-.dark ::-webkit-scrollbar-thumb {
-  background: #334155;
-}
-.dark ::-webkit-scrollbar-thumb:hover {
-  background: #475569;
-}
-
-/* Dynamic Entrance Animations */
+/* Restrained animations */
 @keyframes fadeInUp {
   from {
     opacity: 0;
-    transform: translateY(10px);
+    transform: translateY(8px);
   }
   to {
     opacity: 1;
@@ -89,7 +93,7 @@ body.dark {
 @keyframes scaleIn {
   from {
     opacity: 0;
-    transform: scale(0.97);
+    transform: scale(0.98);
   }
   to {
     opacity: 1;
@@ -98,9 +102,9 @@ body.dark {
 }
 
 .animate-fade-in {
-  animation: fadeInUp 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  animation: fadeInUp 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
 .animate-scale-in {
-  animation: scaleIn 0.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  animation: scaleIn 0.18s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
