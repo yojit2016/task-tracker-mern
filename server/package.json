@@ -1,7 +1,7 @@
 {
-  "name": "task-tracker-server",
+  "name": "ledger-server",
   "version": "1.0.0",
-  "description": "Backend server for Task Tracker Web Application",
+  "description": "Backend server for Ledger Web Application",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",

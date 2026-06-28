@@ -223,7 +223,7 @@ const App = () => {
             </div>
             <div>
               <h1 className="font-heading text-lg font-extrabold tracking-tight text-slate-800 dark:text-white m-0 leading-none">
-                Task Tracker
+                Ledger
               </h1>
               <div className="flex items-center gap-1.5 mt-1">
                 <span className={`h-2 w-2 rounded-full ${

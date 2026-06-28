@@ -1,6 +1,6 @@
 {
-  "name": "task-tracker-client",
-  "description": "Frontend client for Task Tracker application",
+  "name": "ledger-client",
+  "description": "Frontend client for Ledger application",
   "private": true,
   "version": "0.0.0",
   "type": "module",
