@@ -4,7 +4,7 @@ A full-stack task tracker built with the MERN stack — clean REST API, real-tim
 
 **Live App:** [ledger-joji.vercel.app](https://ledger-joji.vercel.app/)
 
-![Ledger screenshot]<img width="1905" height="1073" alt="image" src="https://github.com/user-attachments/assets/f0ca3c2c-f32e-4528-80f2-a6ef7dc143eb" />
+<img width="1905" height="1073" alt="image" src="https://github.com/user-attachments/assets/f0ca3c2c-f32e-4528-80f2-a6ef7dc143eb" />
 
 
 ---
