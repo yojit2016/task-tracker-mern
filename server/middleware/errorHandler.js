@@ -29,6 +29,11 @@ const errorHandler = (err, req, res, next) => {
     message = `Resource not found with id of ${err.value}`;
   }
 
+  // Never leak internal error details to client in production
+  if (process.env.NODE_ENV === 'production' && statusCode === 500) {
+    message = 'An internal server error occurred';
+  }
+
   res.status(statusCode).json({
     success: false,
     message,

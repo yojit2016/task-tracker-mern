@@ -1,4 +1,4 @@
-# MERN Task Tracker
+# Task Tracker
 
 A production-ready, highly responsive Task Tracker web application built using the MERN stack (MongoDB, Express, React, Node.js) with Tailwind CSS v4, axios, express-validator, and centralized error handling.
 

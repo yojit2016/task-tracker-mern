@@ -27,6 +27,18 @@ const validateTaskCreate = [
     .optional({ nullable: true, checkFalsy: true })
     .isISO8601()
     .withMessage('Due date must be a valid date')
+    .custom((value) => {
+      if (value) {
+        const inputDate = new Date(value);
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        inputDate.setHours(0, 0, 0, 0);
+        if (inputDate < today) {
+          throw new Error('Due date cannot be in the past');
+        }
+      }
+      return true;
+    })
 ];
 
 // Validation rules for updating a task (title optional, but can't be empty if provided)
