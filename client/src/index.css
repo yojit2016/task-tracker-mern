@@ -49,7 +49,7 @@
 }
 
 /* Custom variant to enable class-based dark mode toggle */
-@variant dark (.dark &);
+@variant dark (&:where(.dark, .dark *));
 
 body {
   background-color: var(--ledger-bg);

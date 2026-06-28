@@ -58,11 +58,12 @@ const App = () => {
 
   // Sync Dark Mode class
   useEffect(() => {
+    const root = document.documentElement;
     if (darkMode) {
-      document.body.classList.add('dark');
+      root.classList.add('dark');
       localStorage.setItem('theme', 'dark');
     } else {
-      document.body.classList.remove('dark');
+      root.classList.remove('dark');
       localStorage.setItem('theme', 'light');
     }
   }, [darkMode]);
@@ -221,19 +222,9 @@ const App = () => {
             <div className="rounded-sm bg-ledger-brass p-2 text-ledger-bg shadow-xs flex items-center justify-center">
               <ListTodo size={20} className="text-[#15201C]" />
             </div>
-            <div>
-              <h1 className="font-display text-2xl font-bold tracking-tight text-ledger-ink m-0 leading-none">
-                Ledger
-              </h1>
-              <div className="flex items-center gap-1.5 mt-1.5">
-                <span className={`h-1.5 w-1.5 rounded-full ${
-                  apiStatus === 'online' ? 'bg-status-completed animate-pulse' : apiStatus === 'offline' ? 'bg-status-high' : 'bg-ledger-ink/20'
-                }`} />
-                <span className="font-mono text-[9px] uppercase tracking-widest text-ledger-ink/50 font-medium">
-                  {apiStatus === 'online' ? 'API Online' : apiStatus === 'offline' ? 'API Offline' : 'Connecting...'}
-                </span>
-              </div>
-            </div>
+            <h1 className="font-display text-2xl font-bold tracking-tight text-ledger-ink m-0 leading-none">
+              Ledger
+            </h1>
           </div>
 
           {/* Theme switcher */}
